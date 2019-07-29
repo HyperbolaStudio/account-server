@@ -24,21 +24,52 @@ server.route({
     handler:(request,h) => {
         const {payload} = (request as {payload:UnValidatedRegisterRequest});
         if(payload.username && payload.passwordSHA256 && payload.inviteCode){
+            if(!(user.username.regexp.test(payload.username)))
             if(queryUserViaUsername(payload.username)){
-                return {
+                h.response({
                     status:'User Already Registered',
                     userid:-1,
-                }
+                })
             }
             payload.nickname = payload.nickname?payload.nickname:payload.username;
             let genderNum = genderStr2genderNum(payload.gender);
-            mysqlConnection.query(insertNewUser(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate));
+            mysqlConnection.query(insertNewUser(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate),(err,res,field)=>{
+                if(err){
+                    h.response({
+                        status:'Unexpected Error',
+                        userid:-1,
+                    })
+                    throw err;
+                }
+                h.response({
+                    status:'Success',
+                    userid:res.insertID,
+                });
+            });
         }else{
-            return {
+            h.response({
                 status:'Invalid',
                 userid:-1,
-            }
+            })
         }
         return '';
     }
+});
+const init = async () => {
+    await server.start();
+    console.log(`Server running at ${server.info.uri}`)
+    mysqlConnection.connect((err)=>{
+        if(err){
+            throw err;
+        }
+    });
+    console.log(`mysql connected.`)
+}
+init();
+process.on('exit',() => {
+    server.stop();
+    console.log('Server stops.');
+    mysqlConnection.end();
+    console.log('MySQL stops.');
+
 })

@@ -15,14 +15,10 @@ export function insertNewUser(
     passwordSHA256:string,
     nickname:string,
     gender:number,
-    birthdate?:Date,
+    birthdateArr?:number[],
 ):string{
-    if(birthdate){
-        let date = birthdate.getDate().toString();
-        if(date.length == 1){
-            date = `0${date}`;
-        }
-        return `insert into users (username,passwordSHA256,nickname,gender,birthdate) values ('${username}','${passwordSHA256}','${nickname}',${gender},to_date('${birthdate.getFullYear}-${birthdate.getMonth}-${date}','YYYY-MM-DD'))`
+    if(birthdateArr){
+        return `insert into users (username,passwordSHA256,nickname,gender,birthdate) values ('${username}','${passwordSHA256}','${nickname}',${gender},'${birthdateArr[0]}-${birthdateArr[1]}-${birthdateArr[2]}')`
     }
     return `insert into users (username,passwordSHA256,nickname,gender) values ('${username}','${passwordSHA256}','${nickname}',${gender})`
 }
