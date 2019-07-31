@@ -1,62 +1,67 @@
-import {Server} from '@hapi/hapi';
-import inert from '@hapi/inert';
 import {RegisterRequest,RegisterResponse} from '../account-client/lib/declarations';
 import {user} from '../account-client/lib/regexp';
-import mysql from 'mysql';
-import mysqlUser from '../secret/mysql_user.json';
 import {insertNewUser,genderStr2genderNum} from './sql_statements';
 import {queryUserViaUsername} from './user_queries'
-const mysqlConnection = mysql.createConnection({
-    ...mysqlUser,
-    host:'localhost',
-    database:'users'
-})
+import { mysqlConnection, server } from './server_init';
 type UnValidatedRegisterRequest = {
     [P in keyof RegisterRequest]?:RegisterRequest[P];
 }
-const server = new Server({
-    port:3000,
-    host:'localhost',
-})
+function mysqlQuery(statement:string):Promise<any>{
+    return new Promise((resolve,reject)=>{
+        mysqlConnection.query(statement,(err,res,field)=>{
+            if(err){
+                reject(err);
+            }else{
+                resolve(res);
+            }
+        })
+    })
+}
 server.route({
     method:'POST',
     path:'/register',
-    handler:(request,h) => {
+    handler:async (request,h) => {
+        let response = {};
         console.log(`notice[new request]: ${request.info.id}`);
         const {payload} = (request as {payload:UnValidatedRegisterRequest});
         if(payload.username && payload.passwordSHA256 && payload.inviteCode){
-            if(!(user.username.regexp.test(payload.username)))
+            if(!(user.username.regexp.test(payload.username))){
+                response = {
+                    status:'Invalid',
+                    userid:-1,
+                };
+            }
             if(queryUserViaUsername(payload.username)){
                 console.log(`notice[err status]: user ${payload.username} already exists`)
-                h.response({
+                response = {
                     status:'User Already Registered',
                     userid:-1,
-                })
+                };
             }
             payload.nickname = payload.nickname?payload.nickname:payload.username;
             let genderNum = genderStr2genderNum(payload.gender);
-            mysqlConnection.query(insertNewUser(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate),(err,res,field)=>{
-                if(err){
-                    h.response({
-                        status:'Unexpected Error',
-                        userid:-1,
-                    })
-                    throw err;
-                }
+            try{
+                let res = await mysqlQuery(insertNewUser(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate));
                 console.log(`notice[new user]: ${payload.username}`);
-                h.response({
+                response = {
                     status:'Success',
-                    userid:res.insertID,
-                });
-            });
+                    userid:res.insertId,
+                }
+            }catch(e){
+                console.log(e);
+                response = {
+                    status:'Unexpected Error',
+                    userid:-1,
+                };
+            }
         }else{
             console.log(`notice[err status]: invalid value by user ${payload.username}`);
-            h.response({
+            response = {
                 status:'Invalid',
                 userid:-1,
-            })
+            };
         }
-        return '';
+        return response;
     }
 });
 server.route({
@@ -66,27 +71,6 @@ server.route({
         return h.file('./account-client/test/testpage.html');
     }
 })
-async function init (){
-    mysqlConnection.connect((err)=>{
-        if(err){
-            throw err;
-        }
-    });
-    console.log(`mysql connected.`)
-    await server.start();
-    await server.register(inert);
-    console.log(`Server running at ${server.info.uri}`)
-}
-async function stop(){
-    mysqlConnection.end();
-    console.log('MySQL stops.');
-    await server.stop();
-    console.log('Server stops.');
-}
-init();
-process.on('exit',() => {
-    stop();
-});
 // process.on('SIGINT',()=>{
 //     stop();
 // })
