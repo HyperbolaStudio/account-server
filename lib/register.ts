@@ -22,46 +22,49 @@ server.route({
     path:'/register',
     handler:async (request,h) => {
         let response = {};
-        console.log(`notice[new request]: ${request.info.id}`);
-        const {payload} = (request as {payload:UnValidatedRegisterRequest});
-        if(payload.username && payload.passwordSHA256 && payload.inviteCode){
-            if(!(user.username.regexp.test(payload.username))){
-                response = {
-                    status:'Invalid',
-                    userid:-1,
-                };
-            }
-            if(queryUserViaUsername(payload.username)){
-                console.log(`notice[err status]: user ${payload.username} already exists`)
-                response = {
-                    status:'User Already Registered',
-                    userid:-1,
-                };
-            }
-            payload.nickname = payload.nickname?payload.nickname:payload.username;
-            let genderNum = genderStr2genderNum(payload.gender);
-            try{
+        try{
+            console.log(`notice[new request]: ${request.info.id}`);
+            const {payload} = (request as {payload:UnValidatedRegisterRequest});
+            if(payload.username && payload.passwordSHA256 && payload.inviteCode){
+                if(!(user.username.regexp.test(payload.username))){
+                    response = {
+                        status:'Invalid',
+                        userid:-1,
+                    };
+                    return response;
+                }
+                if(await queryUserViaUsername(payload.username)){
+                    console.log(`notice[err status]: user ${payload.username} already exists`)
+                    response = {
+                        status:'User Already Registered',
+                        userid:-1,
+                    };
+                    return response;
+                }
+                payload.nickname = payload.nickname?payload.nickname:payload.username;
+                let genderNum = genderStr2genderNum(payload.gender);
                 let res = await mysqlQuery(insertNewUser(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate));
                 console.log(`notice[new user]: ${payload.username}`);
                 response = {
                     status:'Success',
                     userid:res.insertId,
                 }
-            }catch(e){
-                console.log(e);
+            }else{
+                console.log(`notice[err status]: invalid value by user ${payload.username}`);
                 response = {
-                    status:'Unexpected Error',
+                    status:'Invalid',
                     userid:-1,
                 };
             }
-        }else{
-            console.log(`notice[err status]: invalid value by user ${payload.username}`);
+            return response;
+        }catch(e){
+            console.log(e);
             response = {
-                status:'Invalid',
+                status:'Unexpected Error',
                 userid:-1,
             };
+            return response;
         }
-        return response;
     }
 });
 server.route({
