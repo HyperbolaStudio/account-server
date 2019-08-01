@@ -5,4 +5,7 @@ create table users(
     nickname varchar(64),
     gender tinyint,
     birthdate date
-)
+);
+create table invitecode(
+    code varchar(16) not null
+);
