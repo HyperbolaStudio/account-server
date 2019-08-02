@@ -9,3 +9,7 @@ create table users(
 create table invitecode(
     code varchar(16) not null
 );
+create table sessionMap(
+    sessionid varchar(64) not null,
+    userid bigint
+);
