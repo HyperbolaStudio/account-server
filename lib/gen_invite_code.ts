@@ -1,21 +1,21 @@
 import commander from 'commander';
-import { mysqlConnection } from './server_init';
-import hash from 'hash.js'
+import { gen, show } from './invitecode_utils';
 commander
     .version('1.0.0')
+    .option('-c,--category <category>','Invite code category')
     .command('gen [amount]','Generates invite code.')
-    .command('show','Print invite code list to standard output.')
-    .parse(process.argv);
-const amount = commander.amount?commander.amount:1;
-let arr:string[] = [];
-for(let i = 0;i<amount;i++){
-    let code = hash.sha256().update(Math.random().toString()).digest('hex').slice(0,16);
-    arr.push(code);
-    mysqlConnection.query(`insert into invitecode (code) values ('${code}')`,(err,res,field) => {
-        if(err){
-            console.log(err);
+    .action(async (amount?)=>{
+        let i = 0;
+        for(let x of (await gen(amount,commander.category))){
+            console.log(x);
+            i++;
         }
-        console.log(code);
-    });
-    console.log(`${i} invite code(s) generated.`);
-}
+        console.log(`${i} invite code generated in '${commander.category}.'`)
+    })
+    .command('show','Print invite code list to standard output.')
+    .action(async ()=>{
+        for(let x of (await show(commander.category))){
+            console.log(x);
+        }
+    })
+    .parse(process.argv);
