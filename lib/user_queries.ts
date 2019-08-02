@@ -9,10 +9,11 @@ export function queryUserViaUsername(username:string):Promise<UserInfoDB|undefin
         })
     });
 }
-export function queryUserViaUserID(userID:string):Promise<UserInfoDB|undefined>{
+export function queryUserViaUserID(userID:number):Promise<UserInfoDB|undefined>{
     return new Promise((resolve,reject)=>{
-        mysqlConnection.query(`select * from users where userid = '${userID}'`,(err,res,field)=>{
+        mysqlConnection.query(`select * from users where userid = ${userID}`,(err,res,field)=>{
             if(err)reject(err);
+            if(!res)resolve(undefined);
             resolve(res[0]);
         })
     });

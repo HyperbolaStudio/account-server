@@ -1,5 +1,5 @@
 import mysql from 'mysql';
-import mysqlUser from '../secret/mysql_user.json';
+import mysqlUser from '../config/mysql_user.json';
 export const mysqlConnection = mysql.createConnection({
     ...mysqlUser,
     host:'localhost',

@@ -1,10 +1,11 @@
 import {LoginRequest,LoginResponse} from '../account-client/lib/declarations';
-import {user} from '../account-client/lib/regexp';
-import {insertNewUser,genderStr2genderNum} from './sql_statements';
+//import {user} from '../account-client/lib/regexp';
+//import {insertNewUser,genderStr2genderNum} from './sql_statements';
 import {queryUserViaUsername, queryUserViaUserID} from './user_queries'
 import { server } from './server_init';
-import {asyncMysqlQuery as mysqlQuery} from './mysql_server_init';
+//import {asyncMysqlQuery as mysqlQuery} from './mysql_server_init';
 import { validate } from '../account-client/lib/login';
+import { genSessionID } from './session_utils';
 type UnValidatedLoginRequest = {
     [P in keyof LoginRequest]?:LoginRequest[P];
 }
@@ -32,11 +33,11 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
             //获取用户信息行
             let user;
             switch(payload.loginType){
-                case 0://username
-                    user = await queryUserViaUsername(payload.loginName);
+                case 1://username
+                    user = await queryUserViaUsername(payload.loginName as string);
                     break;
-                case 1://userID
-                    user = await queryUserViaUserID(payload.loginName);
+                case 2://userID
+                    user = await queryUserViaUserID(payload.loginName as number);
                     break;
                 default:
                     response = {
@@ -55,11 +56,13 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
                 return response;
             }
 
+            //登录成功
             if(user.passwordSHA256 == payload.passwordSHA256){
                 response = {
                     status:'Success',
-                    sessionID:'',
+                    sessionID:await genSessionID(user.userid),
                 }
+                return response;
             }else{
                 response = {
                     status:'Failed',
@@ -67,7 +70,6 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
                 }
                 return response;
             }
-
         }else{
             response = {
                 status:'Invalid',
@@ -83,3 +85,22 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
     }
     return response;
 }
+server.route({
+    method:'POST',
+    path:'/api/login',
+    handler:async (request,h)=>{
+        let response = await login(request.payload as UnValidatedLoginRequest);
+        h.state('session',{
+            sessionID:response.sessionID,
+            last:Date.now(),
+        },{
+            ttl:365*24*60*60*1000,
+            isHttpOnly:true,
+            isSecure:true,
+            isSameSite:'Lax',
+            //domain:'.hyperbola.studio',
+            encoding:'base64json',
+        });
+        return response;
+    }
+})
