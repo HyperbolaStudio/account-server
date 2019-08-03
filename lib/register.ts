@@ -89,6 +89,7 @@ server.route({
         return h.file('./account-client/test/testpage.html');
     }
 })
+console.log('notice[server]: Register Service Started.');
 // process.on('SIGINT',()=>{
 //     stop();
 // })

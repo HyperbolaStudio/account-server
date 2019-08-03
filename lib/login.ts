@@ -62,6 +62,7 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
                     status:'Success',
                     sessionID:await genSessionID(user.userid),
                 }
+                console.log(`notice[user login]: ${user.username} logged in.`)
                 return response;
             }else{
                 response = {
@@ -85,6 +86,14 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
     }
     return response;
 }
+server.state('session',{
+    ttl:365*24*60*60*1000,
+    isHttpOnly:false,
+    isSecure:false,
+    // domain:'localhost',
+    path:'/',
+    encoding:'base64json',
+});
 server.route({
     method:'POST',
     path:'/api/login',
@@ -93,14 +102,8 @@ server.route({
         h.state('session',{
             sessionID:response.sessionID,
             last:Date.now(),
-        },{
-            ttl:365*24*60*60*1000,
-            isHttpOnly:true,
-            isSecure:true,
-            isSameSite:'Lax',
-            //domain:'.hyperbola.studio',
-            encoding:'base64json',
         });
         return response;
     }
 })
+console.log('notice[server]: Login Service Started.');

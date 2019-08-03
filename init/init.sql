@@ -13,3 +13,7 @@ create table sessionMap(
     sessionid varchar(64) not null,
     userid bigint
 );
+create table followMap(
+    followedBy bigint not null,
+    followTarget bigint not null
+);
