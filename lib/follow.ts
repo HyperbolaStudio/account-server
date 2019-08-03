@@ -1,12 +1,19 @@
-import { FollowRequest, FollowResponse } from "../account-client/lib/declarations";
+import { FollowRequest, FollowResponse, GetFollowListResponse } from "../account-client/lib/declarations";
 import { addFollow, removeFollow } from "./follow_utils";
 import { server } from "./server_init";
 import { querySession } from "./session_utils";
+import { queryUserViaUserID } from "./user_queries";
 
 type UnvalidatedFollowRequest = {
     [P in keyof FollowRequest]?:FollowRequest[P];
 }
-export async function follow(payload:UnvalidatedFollowRequest,followedBy:number){
+const FOLLOW = false;
+const UNFOLLOW = true;
+export async function follow(
+    payload:UnvalidatedFollowRequest,
+    followedBy:number,
+    op:boolean,
+){
     let response:FollowResponse = {
         status:'Unexpected Error',
     }
@@ -17,7 +24,17 @@ export async function follow(payload:UnvalidatedFollowRequest,followedBy:number)
         return response;
     }
     try{
-        await addFollow(followedBy,payload.targetID);
+        if(!await queryUserViaUserID(payload.targetID)){
+            response = {
+                status:'Target User Not Exist',
+            }
+            return response;
+        }
+        if(op == FOLLOW){
+            await addFollow(followedBy,payload.targetID);
+        }else if(op == UNFOLLOW){
+            await removeFollow(followedBy,payload.targetID);
+        }
         response = {
             status:'Success',
         }
@@ -29,27 +46,18 @@ export async function follow(payload:UnvalidatedFollowRequest,followedBy:number)
         return response;
     }
 }
-export async function unfollow(payload:UnvalidatedFollowRequest,followedBy:number){
-    let response:FollowResponse = {
+const FOLLOWING = false;
+const FOLLOWED = true;
+export async function getFollowList(
+    user:number,
+    op:boolean
+){
+    let response:GetFollowListResponse = {
         status:'Unexpected Error',
+        list:[],
     }
-    if(!payload.targetID || payload.targetID == followedBy){
-        response = {
-            status:'Invalid',
-        };
-        return response;
-    }
-    try{
-        await removeFollow(followedBy,payload.targetID);
-        response = {
-            status:'Success',
-        }
-        return response;
-    }catch(e){
-        response = {
-            status:'Unexpected Error',
-        }
-        return response;
+    if(op == FOLLOWING){
+        let res;
     }
 }
 server.route({
@@ -67,7 +75,7 @@ server.route({
             }
             return response;
         }else{
-            return await follow(request.payload as UnvalidatedFollowRequest,followedBy);
+            return await follow(request.payload as UnvalidatedFollowRequest,followedBy,FOLLOW);
         }
     }
 });
@@ -86,7 +94,7 @@ server.route({
             }
             return response;
         }else{
-            return await unfollow(request.payload as UnvalidatedFollowRequest,followedBy);
+            return await follow(request.payload as UnvalidatedFollowRequest,followedBy,UNFOLLOW);
         }
     }
 });

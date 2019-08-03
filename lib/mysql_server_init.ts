@@ -1,9 +1,10 @@
 import mysql from 'mysql';
 import mysqlUser from '../config/mysql_user.json';
+import mysqlName from '../config/mysql_table_name.json';
 export const mysqlConnection = mysql.createConnection({
     ...mysqlUser,
     host:'localhost',
-    database:'users'
+    database:mysqlName.database,
 });
 export function mysqlInit(){
     mysqlConnection.connect((err)=>{

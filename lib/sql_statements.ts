@@ -1,3 +1,4 @@
+import mysqlName from '../config/mysql_table_name.json';
 export function genderStr2genderNum(genderStr:string|undefined):number{
     switch (genderStr){
         case 'male':
@@ -18,7 +19,7 @@ export function insertNewUser(
     birthdateArr?:number[],
 ):string{
     if(birthdateArr){
-        return `insert into users (username,passwordSHA256,nickname,gender,birthdate) values ('${username}','${passwordSHA256}','${nickname}',${gender},'${birthdateArr[0]}-${birthdateArr[1]}-${birthdateArr[2]}')`
+        return `insert into ${mysqlName.table.users} (username,passwordSHA256,nickname,gender,birthdate) values ('${username}','${passwordSHA256}','${nickname}',${gender},'${birthdateArr[0]}-${birthdateArr[1]}-${birthdateArr[2]}')`
     }
-    return `insert into users (username,passwordSHA256,nickname,gender) values ('${username}','${passwordSHA256}','${nickname}',${gender})`
+    return `insert into ${mysqlName.table.users} (username,passwordSHA256,nickname,gender) values ('${username}','${passwordSHA256}','${nickname}',${gender})`
 }

@@ -3,6 +3,7 @@ import {user} from '../account-client/lib/regexp';
 import {insertNewUser,genderStr2genderNum} from './sql_statements';
 import {queryUserViaUsername} from './user_queries'
 import { server } from './server_init';
+import mysqlName from '../config/mysql_table_name.json';
 type UnValidatedRegisterRequest = {
     [P in keyof RegisterRequest]?:RegisterRequest[P];
 }
@@ -28,7 +29,7 @@ export async function register(payload:UnValidatedRegisterRequest):Promise<Regis
             }
 
             //检查邀请码是否存在
-            if(!(await validate(payload.inviteCode,'invitecode'))){
+            if(!(await validate(payload.inviteCode,mysqlName.table.registerInviteCode))){
                 console.log(`notice[err status]: user ${payload.username} wants to register, but the user's invite code is invalid`);
                 response = {
                     status:'Invalid',
@@ -36,7 +37,7 @@ export async function register(payload:UnValidatedRegisterRequest):Promise<Regis
                 };
                 return response;
             }
-            removeCode(payload.inviteCode,'invitecode');
+            removeCode(payload.inviteCode,mysqlName.table.registerInviteCode);
 
             //检查用户是否存在
             if(await queryUserViaUsername(payload.username)){

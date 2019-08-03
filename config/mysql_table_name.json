@@ -1,0 +1,9 @@
+{
+    "database":"users",
+    "table":{
+        "users":"users",
+        "sessions":"sessionMap",
+        "registerInviteCode":"inviteCode",
+        "followMap":"followMap"
+    }
+}
