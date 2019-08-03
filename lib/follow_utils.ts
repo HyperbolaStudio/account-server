@@ -1,7 +1,8 @@
 import { asyncMysqlQuery } from "./mysql_server_init";
 
 export async function addFollow(followedBy:number,followTarget:number){
-    if(!await asyncMysqlQuery(`select * from followMap where followedBy = ${followedBy} and followTarget = ${followTarget}`)){
+    let res = await asyncMysqlQuery(`select * from followMap where followedBy = ${followedBy} and followTarget = ${followTarget}`);
+    if(!res[0]){
         await asyncMysqlQuery(`insert into followMap (followedBy,followTarget) values (${followedBy},${followTarget})`);
     } 
 }

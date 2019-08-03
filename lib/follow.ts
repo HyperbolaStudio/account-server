@@ -1,5 +1,5 @@
 import { FollowRequest, FollowResponse } from "../account-client/lib/declarations";
-import { addFollow } from "./follow_utils";
+import { addFollow, removeFollow } from "./follow_utils";
 import { server } from "./server_init";
 import { querySession } from "./session_utils";
 
@@ -40,7 +40,7 @@ export async function unfollow(payload:UnvalidatedFollowRequest,followedBy:numbe
         return response;
     }
     try{
-        await addFollow(followedBy,payload.targetID);
+        await removeFollow(followedBy,payload.targetID);
         response = {
             status:'Success',
         }
@@ -68,6 +68,25 @@ server.route({
             return response;
         }else{
             return await follow(request.payload as UnvalidatedFollowRequest,followedBy);
+        }
+    }
+});
+server.route({
+    method:'POST',
+    path:'/api/unfollow',
+    handler:async (request,h)=>{
+        const session = request.state.session;
+        let response:FollowResponse = {
+            status:'Unexpected Error',
+        }
+        let followedBy:number|null = 0;
+        if(!session || !session.sessionID || !(followedBy = await querySession(session.sessionID))){
+            response = {
+                status:'Not Logged In',
+            }
+            return response;
+        }else{
+            return await unfollow(request.payload as UnvalidatedFollowRequest,followedBy);
         }
     }
 });
