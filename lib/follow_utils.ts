@@ -12,5 +12,9 @@ export async function removeFollow(followedBy:number,followTarget:number){
 }
 export async function queryFollowing(user:number){
     let resOrigin = await asyncMysqlQuery(`select followTarget from ${mysqlName.table.followMap} where followedBy = ${user}`);
-    //TODO
+    let res:number[] = [];
+    for(let i = 0;i<res.length;i++){
+        res[i] = resOrigin[i].followTarget;
+    }
+    return res;
 }
