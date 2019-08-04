@@ -177,4 +177,26 @@ server.route({
         }
     )
 });
+server.route({
+    method:'POST',
+    path:'/api/follow/amount/following',
+    handler:genRouterHandler<GetFollowAmountResponse>(
+        {status:'Not Logged In',amount:-1},
+        {status:"Unexpected Error",amount:-1},
+        async (payload,user)=>{
+            return await getFollowAmount(user,FOLLOWING);
+        }
+    )
+});
+server.route({
+    method:'POST',
+    path:'/api/follow/amount/followed',
+    handler:genRouterHandler<GetFollowAmountResponse>(
+        {status:'Not Logged In',amount:-1},
+        {status:"Unexpected Error",amount:-1},
+        async (payload,user)=>{
+            return await getFollowAmount(user,FOLLOWED);
+        }
+    )
+})
 console.log('notice[server]: Follow Service Started.');

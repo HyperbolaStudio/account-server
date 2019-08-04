@@ -1,4 +1,4 @@
-import { queryUserViaUserID, queryUserViaUsername } from "../lib/user_queries";
+import { queryUserViaUserID, queryUserViaUsername } from "../api/user_queries";
 async function t(){
     let r = await queryUserViaUserID(40)
     if(r){

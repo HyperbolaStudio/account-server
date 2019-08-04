@@ -1,4 +1,4 @@
-import {addFollow,removeFollow} from '../lib/follow_utils';
+import {addFollow,removeFollow} from '../api/follow_utils';
 async function t(){
     await addFollow(41,40);
     await addFollow(40,41);
