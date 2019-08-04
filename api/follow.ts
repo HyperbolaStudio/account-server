@@ -5,8 +5,6 @@ import { querySession } from "./session_utils";
 import { queryUserViaUserID } from "./user_queries";
 import {Lifecycle} from '@hapi/hapi'
 
-/* TODO unit test of follow module*/
-
 type UnvalidatedFollowRequest = {
     [P in keyof FollowRequest]?:FollowRequest[P];
 }
@@ -51,6 +49,9 @@ export async function follow(
 }
 export const FOLLOWING = false;//关注
 export const FOLLOWED = true;//粉丝
+
+//FIXME: Unit test WA
+//TODO: Find out why it throws Unexpected Error
 export async function getFollowList(
     payload:GetFollowListRequest,
     user:number,
