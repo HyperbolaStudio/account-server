@@ -28,6 +28,16 @@ export async function register(payload:UnValidatedRegisterRequest):Promise<Regis
                 return response;
             }
 
+            //检查用户是否存在
+            if(await queryUserViaUsername(payload.username)){
+                console.log(`notice[err status]: user ${payload.username} already exists`)
+                response = {
+                    status:'User Already Registered',
+                    userID:-1,
+                };
+                return response;
+            }
+            
             //检查邀请码是否存在
             if(!(await validate(payload.inviteCode,mysqlName.table.registerInviteCode))){
                 console.log(`notice[err status]: user ${payload.username} wants to register, but the user's invite code is invalid`);
@@ -38,16 +48,6 @@ export async function register(payload:UnValidatedRegisterRequest):Promise<Regis
                 return response;
             }
             removeCode(payload.inviteCode,mysqlName.table.registerInviteCode);
-
-            //检查用户是否存在
-            if(await queryUserViaUsername(payload.username)){
-                console.log(`notice[err status]: user ${payload.username} already exists`)
-                response = {
-                    status:'User Already Registered',
-                    userID:-1,
-                };
-                return response;
-            }
 
             //数据转换，插入用户
             let genderNum = genderStr2genderNum(payload.gender);

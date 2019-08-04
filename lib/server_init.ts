@@ -18,8 +18,12 @@ async function stop(){
     console.log('Server stops.');
 }
 init();
-process.on('exit',() => {
+// process.on('exit',() => {
+//     stop();
+// });
+process.on('SIGINT',()=>{
+    console.log('Received SIGINT signal.');
     stop();
-});
+})
 export {server};
 export {mysqlConnection} from './mysql_server_init';
