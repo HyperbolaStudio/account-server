@@ -10,8 +10,8 @@ import {Lifecycle} from '@hapi/hapi'
 type UnvalidatedFollowRequest = {
     [P in keyof FollowRequest]?:FollowRequest[P];
 }
-const FOLLOW = false;
-const UNFOLLOW = true;
+export const FOLLOW = false;
+export const UNFOLLOW = true;
 export async function follow(
     payload:UnvalidatedFollowRequest,
     followedBy:number,
@@ -49,8 +49,8 @@ export async function follow(
         return response;
     }
 }
-const FOLLOWING = false;//关注
-const FOLLOWED = true;//粉丝
+export const FOLLOWING = false;//关注
+export const FOLLOWED = true;//粉丝
 export async function getFollowList(
     payload:GetFollowListRequest,
     user:number,
@@ -107,6 +107,7 @@ export async function getFollowAmount(user:number,op:boolean){
         }
         return response;
     }catch(e){
+        console.log(e);
         response = {
             status:'Unexpected Error',
             amount:-1,

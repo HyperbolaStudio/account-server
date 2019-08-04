@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.ts",
   "scripts": {
-    "deploy": "npx ts-node lib/index",
+    "deploy": "npx ts-node api/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

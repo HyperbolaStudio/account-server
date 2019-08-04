@@ -16,6 +16,7 @@ async function stop(){
     mysqlStop();
     await server.stop();
     console.log('Server stops.');
+    process.exit();
 }
 init();
 // process.on('exit',() => {
