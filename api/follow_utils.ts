@@ -20,7 +20,7 @@ export async function queryFollowing(user:number,offset:number = 0,amount:number
     return res;
 }
 export async function queryFollowed(user:number,offset:number = 0,amount:number = 100){
-    let resOrigin = await asyncMysqlQuery(`select followedBy from ${mysqlName.table.followMap} where followedTarget = ${user} limit ${offset},${amount}`);
+    let resOrigin = await asyncMysqlQuery(`select followedBy from ${mysqlName.table.followMap} where followTarget = ${user} limit ${offset},${amount}`);
     //console.log(resOrigin);
     let res:number[] = [];
     for(let i = 0;i<resOrigin.length;i++){

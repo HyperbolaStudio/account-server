@@ -2,7 +2,7 @@ import {RegisterRequest,RegisterResponse} from '../account-client/lib/declaratio
 import {user} from '../account-client/lib/regexp';
 import {insertNewUser,genderStr2genderNum} from './sql_statements';
 import {queryUserViaUsername} from './user_queries'
-import { server } from './server_init';
+import { server } from '../lib/server_init';
 import mysqlName from '../config/mysql_table_name.json';
 type UnValidatedRegisterRequest = {
     [P in keyof RegisterRequest]?:RegisterRequest[P];
@@ -61,6 +61,7 @@ export async function register(payload:UnValidatedRegisterRequest):Promise<Regis
         }
         return response;
     }catch(e){
+        console.log(e);
         response = {
             status:'Unexpected Error',
             userID:-1,
@@ -76,6 +77,8 @@ server.route({
         return (await register(payload));
     }
 });
+
+//TODO: This is a test page
 server.route({
     method:'GET',
     path:'/register',

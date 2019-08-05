@@ -1,6 +1,6 @@
 import { FollowRequest, FollowResponse, GetFollowListResponse, GetFollowListRequest, GetFollowAmountResponse } from "../account-client/lib/declarations";
 import { addFollow, removeFollow, queryFollowing, queryFollowed, queryFollowedAmount, queryFollowingAmount } from "./follow_utils";
-import { server } from "./server_init";
+import { server } from "../lib/server_init";
 import { querySession } from "./session_utils";
 import { queryUserViaUserID } from "./user_queries";
 import {Lifecycle} from '@hapi/hapi'
@@ -41,6 +41,7 @@ export async function follow(
         }
         return response;
     }catch(e){
+        console.log(e);
         response = {
             status:'Unexpected Error',
         }
@@ -82,6 +83,7 @@ export async function getFollowList(
         }
         return response;
     }catch(e){
+        console.log(e);
         response = {
             status:'Unexpected Error',
             list:[],

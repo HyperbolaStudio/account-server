@@ -2,7 +2,7 @@ import {LoginRequest,LoginResponse} from '../account-client/lib/declarations';
 //import {user} from '../account-client/lib/regexp';
 //import {insertNewUser,genderStr2genderNum} from './sql_statements';
 import {queryUserViaUsername, queryUserViaUserID} from './user_queries'
-import { server } from './server_init';
+import { server } from '../lib/server_init';
 //import {asyncMysqlQuery as mysqlQuery} from './mysql_server_init';
 import { validate } from '../account-client/lib/login';
 import { genSessionID } from './session_utils';
@@ -79,6 +79,7 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
             return response;
         }
     }catch(e){
+        console.log(e);
         response = {
             status:'Unexpected Error',
             sessionID:'',

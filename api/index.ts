@@ -1,4 +1,4 @@
 import './register';
 import './login';
 import './follow';
-import '../test/follow_unit_test';
+// import '../test/follow_unit_test';

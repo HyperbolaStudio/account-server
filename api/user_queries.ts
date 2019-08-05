@@ -1,10 +1,11 @@
-import { mysqlConnection } from "./server_init";
+import { mysqlConnection } from "../lib/server_init";
 import { UserInfoDB } from "../account-client/lib/declarations";
 
 export function queryUserViaUsername(username:string):Promise<UserInfoDB|undefined>{
     return new Promise((resolve,reject)=>{
         mysqlConnection.query(`select * from users where username = '${username}'`,(err,res,field)=>{
             if(err)reject(err);
+            // console.log(res);
             resolve(res[0]);
         })
     });
