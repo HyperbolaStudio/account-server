@@ -1,11 +1,11 @@
 import mysqlName from '../config/mysql_table_name.json';
 export function genderStr2genderNum(genderStr:string|undefined):number{
     switch (genderStr){
-        case 'male':
+        case undefined:
             return 1;
-        case 'female':
+        case 'male':
             return 2;
-        case 'other':
+        case 'female':
             return 3;
         default:
             return 0;

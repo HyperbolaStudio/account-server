@@ -8,9 +8,9 @@ async function test(){
         if(x !in c){
             throw new Error('\u001b[41;37m Wrong Answer \u001b[0m')
         }
-        removeCode(x,'invitecode');
+        //removeCode(x,'invitecode');
     }
+    console.log('\u001b[42;37m Accepted \u001b[0m');
+    process.exit(0);
 }
 test();
-console.log('\u001b[42;37m Accepted \u001b[0m');
-process.exit(0);

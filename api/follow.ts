@@ -51,8 +51,6 @@ export async function follow(
 export const FOLLOWING = false;//关注
 export const FOLLOWED = true;//粉丝
 
-//FIXME: Unit test WA
-//TODO: Find out why it throws Unexpected Error
 export async function getFollowList(
     payload:GetFollowListRequest,
     user:number,
