@@ -1,24 +1,22 @@
-import { FollowRequest, FollowResponse, GetFollowListResponse, GetFollowListRequest, GetFollowAmountResponse } from "../account-client/lib/declarations";
-import { addFollow, removeFollow, queryFollowing, queryFollowed, queryFollowedAmount, queryFollowingAmount } from "./follow_utils";
+import { FollowRequest, FollowResponse, GetFollowListResponse, GetFollowListRequest, GetFollowAmountResponse, UnValidated } from "../account-client/lib/declarations";
+import { addFollow, removeFollow, queryFollowing, queryFollowed, queryFollowedAmount, queryFollowingAmount } from "../api_utils/follow_utils";
 import { server } from "../lib/server_init";
-import { querySession } from "./session_utils";
-import { queryUserViaUserID } from "./user_queries";
+import { querySession } from "../api_utils/session_utils";
+import { queryUserViaUserID } from "../api_utils/user_queries";
 import {Lifecycle} from '@hapi/hapi'
+import { qFollowListValidate, followValidate } from "../account-client/lib/follow";
 
-type UnvalidatedFollowRequest = {
-    [P in keyof FollowRequest]?:FollowRequest[P];
-}
 export const FOLLOW = false;
 export const UNFOLLOW = true;
 export async function follow(
-    payload:UnvalidatedFollowRequest,
+    payload:UnValidated<FollowRequest>,
     followedBy:number,
     op:boolean,
 ){
     let response:FollowResponse = {
         status:'Unexpected Error',
     }
-    if(!payload.targetID || payload.targetID == followedBy || typeof(payload.targetID)!='number'){
+    if(!followValidate(payload) || payload.targetID == followedBy){
         response = {
             status:'Invalid',
         };
@@ -52,7 +50,7 @@ export const FOLLOWING = false;//关注
 export const FOLLOWED = true;//粉丝
 
 export async function getFollowList(
-    payload:GetFollowListRequest,
+    payload:UnValidated<GetFollowListRequest>,
     user:number,
     op:boolean
 ){
@@ -61,7 +59,7 @@ export async function getFollowList(
         list:[],
     }
     try{
-        if(typeof(payload.offset)!='number' || typeof(payload.amount)!='number'){
+        if(!qFollowListValidate(payload)){
             response = {
                 status:'Invalid',
                 list:[],

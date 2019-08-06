@@ -1,4 +1,4 @@
-import { removeCode, gen, show } from "../api/invitecode_utils";
+import { removeCode, gen, show } from "../api_utils/invitecode_utils";
 async function test(){
     let a = await gen(10,'invitecode');
     let b = await gen(10,'invitecode');

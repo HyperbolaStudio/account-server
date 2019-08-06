@@ -1,4 +1,4 @@
-import { asyncMysqlQuery } from "./mysql_server_init";
+import { asyncMysqlQuery } from "../lib/mysql_server_init";
 import mysqlName from '../config/mysql_table_name.json';
 
 export async function addFollow(followedBy:number,followTarget:number){

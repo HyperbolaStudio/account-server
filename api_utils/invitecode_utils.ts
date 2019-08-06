@@ -1,4 +1,4 @@
-import { asyncMysqlQuery } from "./mysql_server_init";
+import { asyncMysqlQuery } from "../lib/mysql_server_init";
 import hash from 'hash.js'
 
 export async function gen(amount = 1,category:string){

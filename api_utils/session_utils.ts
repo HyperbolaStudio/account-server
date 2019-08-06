@@ -1,5 +1,5 @@
 import hash from 'hash.js';
-import { asyncMysqlQuery } from './mysql_server_init';
+import { asyncMysqlQuery } from '../lib/mysql_server_init';
 import mysqlName from '../config/mysql_table_name.json';
 export async function genSessionID(userid:number){
     let sessionID = hash.sha256().update(Date.now().toString()).digest('hex');

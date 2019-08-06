@@ -1,9 +1,9 @@
 import {follow,getFollowList,getFollowAmount, FOLLOW, FOLLOWING, FOLLOWED, UNFOLLOW} from '../api/follow'
 import {register} from '../api/register';
-import { gen as genInviteCode } from '../api/invitecode_utils';
-import { queryFollowingAmount } from '../api/follow_utils';
-import { queryUserViaUserID, queryUserViaUsername } from '../api/user_queries';
-import { asyncMysqlQuery } from '../api/mysql_server_init';
+import { gen as genInviteCode } from '../api_utils/invitecode_utils';
+import { queryFollowingAmount } from '../api_utils/follow_utils';
+import { queryUserViaUserID, queryUserViaUsername } from '../api_utils/user_queries';
+import { asyncMysqlQuery } from '../lib/mysql_server_init';
 let start = 0,end = 0;
 async function t(maxn:number){
     await (async () => {

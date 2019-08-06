@@ -1,4 +1,4 @@
-import {validate} from '../api/invitecode_utils';
+import {validate} from '../api_utils/invitecode_utils';
 let test = [
     {
         category:'invitecode',

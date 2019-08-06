@@ -1,6 +1,6 @@
 import {Server} from '@hapi/hapi';
 import inert from '@hapi/inert';
-import { mysqlInit, mysqlStop } from '../api/mysql_server_init';
+import { mysqlInit, mysqlStop } from './mysql_server_init';
 
 const server = new Server({
     port:3000,
@@ -16,7 +16,7 @@ async function stop(){
     mysqlStop();
     await server.stop();
     console.log('Server stops.');
-    process.exit();
+    // process.exit();
 }
 init();
 // process.on('exit',() => {
@@ -27,4 +27,4 @@ process.on('SIGINT',()=>{
     stop();
 })
 export {server};
-export {mysqlConnection} from '../api/mysql_server_init';
+export {mysqlConnection} from './mysql_server_init';

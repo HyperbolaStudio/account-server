@@ -1,13 +1,13 @@
-import {RegisterRequest,RegisterResponse, UnValidatedRegisterRequest} from '../account-client/lib/declarations';
+import {RegisterRequest,RegisterResponse, UnValidated} from '../account-client/lib/declarations';
 import {user} from '../account-client/lib/regexp';
-import {insertNewUser,genderStr2genderNum} from './register_utils';
-import {queryUserViaUsername} from './user_queries'
+import {insertNewUser,genderStr2genderNum} from '../api_utils/register_utils';
+import {queryUserViaUsername} from '../api_utils/user_queries'
 import { server } from '../lib/server_init';
 import mysqlName from '../config/mysql_table_name.json';
 import {validate as valValidate} from '../account-client/lib/register';
-import {asyncMysqlQuery as mysqlQuery} from './mysql_server_init';
-import { validate, removeCode } from './invitecode_utils';
-export async function register(payload:UnValidatedRegisterRequest):Promise<RegisterResponse>{
+import {asyncMysqlQuery as mysqlQuery} from '../lib/mysql_server_init';
+import { validate, removeCode } from '../api_utils/invitecode_utils';
+export async function register(payload:UnValidated<RegisterRequest>):Promise<RegisterResponse>{
     let response:RegisterResponse = {
         status:'Invalid',
         userID:-1,
@@ -64,7 +64,7 @@ server.route({
     method:'POST',
     path:'/api/register',
     handler:async (request,h) => {
-        const {payload} = (request as {payload:UnValidatedRegisterRequest});
+        const {payload} = (request as {payload:UnValidated<RegisterRequest>});
         return (await register(payload));
     }
 });

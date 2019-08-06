@@ -1,13 +1,10 @@
-import {LoginRequest,LoginResponse, UnValidatedLoginRequest} from '../account-client/lib/declarations';
-//import {user} from '../account-client/lib/regexp';
-//import {insertNewUser,genderStr2genderNum} from './sql_statements';
-import {queryUserViaUsername, queryUserViaUserID} from './user_queries'
+import {LoginRequest,LoginResponse, UnValidated, LOGIN_REQUEST_LOGIN_TYPE_USERNAME, LOGIN_REQUEST_LOGIN_TYPE_USERID} from '../account-client/lib/declarations';
+import {queryUserViaUsername, queryUserViaUserID} from '../api_utils/user_queries'
 import { server } from '../lib/server_init';
-//import {asyncMysqlQuery as mysqlQuery} from './mysql_server_init';
 import { validate as loginValidate } from '../account-client/lib/login';
-import { genSessionID } from './session_utils';
+import { genSessionID } from '../api_utils/session_utils';
 
-export async function login(payload:UnValidatedLoginRequest):Promise<LoginResponse>{
+export async function login(payload:UnValidated<LoginRequest>):Promise<LoginResponse>{
     let response:LoginResponse = {
         status:'Invalid',
         sessionID:'',
@@ -29,10 +26,10 @@ export async function login(payload:UnValidatedLoginRequest):Promise<LoginRespon
         //获取用户信息行
         let user;
         switch(payload.loginType){
-            case 1://username
+            case LOGIN_REQUEST_LOGIN_TYPE_USERNAME://username
                 user = await queryUserViaUsername(payload.loginName as string);
                 break;
-            case 2://userID
+            case LOGIN_REQUEST_LOGIN_TYPE_USERID://userID
                 user = await queryUserViaUserID(payload.loginName as number);
                 break;
             default:
@@ -87,7 +84,7 @@ server.route({
     method:'POST',
     path:'/api/login',
     handler:async (request,h)=>{
-        let response = await login(request.payload as UnValidatedLoginRequest);
+        let response = await login(request.payload as UnValidated<LoginRequest>);
         h.state('session',{
             sessionID:response.sessionID,
             last:Date.now(),
