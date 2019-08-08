@@ -54,7 +54,7 @@ export async function login(payload:UnValidated<LoginRequest>):Promise<LoginResp
                 status:'Success',
                 sessionID:await genSessionID(user.userid),
             }
-            console.log(`notice[user login]: ${user.username} logged in.`)
+            // console.log(`notice[user login]: ${user.username} logged in.`)
             return response;
         }else{
             response = {

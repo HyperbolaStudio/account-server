@@ -1,1 +1,1 @@
-import './follow_unit_test';
+import './query_user_test';

@@ -11,6 +11,18 @@ export function genderStr2genderNum(genderStr:string|undefined):number{
             return 0;
     }
 }
+export function genderNum2genderStr(genderNum:number):string{
+    switch (genderNum){
+        case 2:
+            return `male`;
+        case 3:
+            return `female`;
+        case 1:
+            return `unknown`;
+        default:
+            return `other`;
+    }
+}
 export function insertNewUser(
     username:string,
     passwordSHA256:string,

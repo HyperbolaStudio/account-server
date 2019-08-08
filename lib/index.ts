@@ -1,2 +1,3 @@
 import '../api';
-import '../test'
+import '../page/index_page';
+// import '../test'

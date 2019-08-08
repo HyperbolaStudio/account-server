@@ -1,5 +1,5 @@
 import {RegisterRequest,RegisterResponse, UnValidated} from '../account-client/lib/declarations';
-import {user} from '../account-client/lib/regexp';
+// import {user} from '../account-client/lib/regexp';
 import {insertNewUser,genderStr2genderNum} from '../api_utils/register_utils';
 import {queryUserViaUsername} from '../api_utils/user_queries'
 import { server } from '../lib/server_init';
@@ -69,7 +69,7 @@ server.route({
     }
 });
 
-//TODO: This is a test page
+// TODO: This is a test page
 server.route({
     method:'GET',
     path:'/register',
