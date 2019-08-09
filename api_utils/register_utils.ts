@@ -30,8 +30,9 @@ export function insertNewUser(
     gender:number,
     birthdateArr?:number[],
 ):string{
+    let d = new Date();
     if(birthdateArr){
-        return `insert into ${mysqlName.table.users} (username,passwordSHA256,nickname,gender,birthdate) values ('${username}','${passwordSHA256}','${nickname}',${gender},'${birthdateArr[0]}-${birthdateArr[1]}-${birthdateArr[2]}')`
+        return `insert into ${mysqlName.table.users} (username,passwordSHA256,nickname,gender,birthdate,regtime) values ('${username}','${passwordSHA256}','${nickname}',${gender},'${birthdateArr[0]}-${birthdateArr[1]}-${birthdateArr[2]}','${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}')`
     }
-    return `insert into ${mysqlName.table.users} (username,passwordSHA256,nickname,gender) values ('${username}','${passwordSHA256}','${nickname}',${gender})`
+    return `insert into ${mysqlName.table.users} (username,passwordSHA256,nickname,gender,regtime) values ('${username}','${passwordSHA256}','${nickname}',${gender},'${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}')`
 }

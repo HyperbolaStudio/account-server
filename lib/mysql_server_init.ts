@@ -14,11 +14,14 @@ export function mysqlInit(){
         console.log(`mysql connected.`);
     });
 }
-export function mysqlStop(){
-    mysqlConnection.end((err)=>{
-        if(err)throw err;
-        console.log('MySQL stops.');
-    });
+export async function mysqlStop(){
+    return new Promise<void>((resolve,reject)=>{
+        mysqlConnection.end((err)=>{
+            if(err)reject(err);
+            console.log('MySQL stops.');
+            resolve();
+        });
+    })
 }
 export function asyncMysqlQuery(statement:string):Promise<any>{
     return new Promise((resolve,reject)=>{

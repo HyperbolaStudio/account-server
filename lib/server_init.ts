@@ -12,11 +12,11 @@ async function init (){
     await server.register(inert);
     console.log(`Server running at ${server.info.uri}`)
 }
-async function stop(){
-    mysqlStop();
+export async function stop(){
+    await mysqlStop();
     await server.stop();
     console.log('Server stops.');
-    // process.exit();
+    process.exit();
 }
 init();
 // process.on('exit',() => {
@@ -24,6 +24,9 @@ init();
 // });
 process.on('SIGINT',()=>{
     console.log('Received SIGINT signal.');
+    stop();
+});
+process.on('exit',()=>{
     stop();
 })
 export {server};
