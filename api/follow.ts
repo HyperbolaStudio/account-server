@@ -1,10 +1,10 @@
 import { FollowRequest, FollowResponse, GetFollowListResponse, GetFollowListRequest, GetFollowAmountResponse, UnValidated } from "../account-client/lib/declarations";
 import { addFollow, removeFollow, queryFollowing, queryFollowed, queryFollowedAmount, queryFollowingAmount } from "../api_utils/follow_utils";
 import { server } from "../lib/server_init";
-import { querySession } from "../api_utils/session_utils";
 import { queryUserViaUserID } from "../api_utils/user_queries";
-import {Lifecycle} from '@hapi/hapi'
+
 import { qFollowListValidate, followValidate } from "../account-client/lib/follow";
+import { genRouterHandler } from "../api_utils/sess_hadler";
 
 export const FOLLOW = false;
 export const UNFOLLOW = true;
@@ -114,25 +114,7 @@ export async function getFollowAmount(user:number,op:boolean){
         return response;
     }
 }
-function genRouterHandler<ResponseT>(
-    nLogin:ResponseT,
-    uexpErr:ResponseT,
-    responseHandler:(payload:any,user:number)=>Promise<ResponseT>
-):Lifecycle.Method{
-    return async (request,h)=>{
-        const session = request.state.session;
-        let user:number|null = 0;
-        try{
-            if(!session || !session.sessionID || !(user = await querySession(session.sessionID))){
-                return nLogin;
-            }else{
-                return await responseHandler(request.payload,user);
-            }
-        }catch(e){
-            return uexpErr;
-        }
-    }
-}
+
 server.route({
     method:'POST',
     path:'/api/follow',

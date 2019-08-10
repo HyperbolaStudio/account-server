@@ -1,4 +1,4 @@
 import '../api';
-import '../page/index_page';
+import '../page';
 import './console';
 // import '../test'
