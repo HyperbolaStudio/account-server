@@ -1,4 +1,4 @@
-import {LoginRequest,LoginResponse, UnValidated, LOGIN_REQUEST_LOGIN_TYPE_USERNAME, LOGIN_REQUEST_LOGIN_TYPE_USERID} from '../account-client/lib/declarations';
+import {LoginRequest,LoginResponse, UnValidated, QueryUserCol} from '../account-client/lib/declarations';
 import {queryUserViaUsername, queryUserViaUserID} from '../api_utils/user_queries'
 import { server } from '../lib/server_init';
 import { validate as loginValidate } from '../account-client/lib/login';
@@ -28,10 +28,10 @@ export async function login(payload:UnValidated<LoginRequest>,h?:ResponseToolkit
         //获取用户信息行
         let user;
         switch(payload.loginType){
-            case LOGIN_REQUEST_LOGIN_TYPE_USERNAME://username
+            case QueryUserCol.USERNAME://username
                 user = await queryUserViaUsername(payload.loginName as string);
                 break;
-            case LOGIN_REQUEST_LOGIN_TYPE_USERID://userID
+            case QueryUserCol.USERID://userID
                 user = await queryUserViaUserID(payload.loginName as number);
                 break;
             default:

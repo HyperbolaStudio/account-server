@@ -1,5 +1,5 @@
 import { server } from "../lib/server_init";
-import { UnValidated, QueryUserRequest, QueryUserResponse, QUERY_USER_REQUEST_QUERY_COL_USERNAME, QUERY_USER_REQUEST_QUERY_COL_USERID } from "../account-client/lib/declarations";
+import { UnValidated, QueryUserRequest, QueryUserResponse, QueryUserCol } from "../account-client/lib/declarations";
 import { validate } from "../account-client/lib/query_user";
 import { queryUserViaUsername, queryUserViaUserID } from "../api_utils/user_queries";
 import { genderNum2genderStr } from "../api_utils/register_utils";
@@ -19,10 +19,10 @@ export async function queryUser(payload:UnValidated<QueryUserRequest>,h?:Respons
         }
         let res;
         switch(payload.queryCol){
-            case QUERY_USER_REQUEST_QUERY_COL_USERNAME:
+            case QueryUserCol.USERNAME:
                 res = await queryUserViaUsername(payload.queryName as string);
                 break;
-            case QUERY_USER_REQUEST_QUERY_COL_USERID:
+            case QueryUserCol.USERID:
                 res = await queryUserViaUserID(payload.queryName as number);
                 break;
         }
