@@ -8,7 +8,8 @@ import {validate as valValidate} from '../account-client/lib/register';
 import {asyncMysqlQuery as mysqlQuery} from '../lib/mysql_server_init';
 import { validate, removeCode } from '../api_utils/invitecode_utils';
 import {ResponseToolkit} from '@hapi/hapi'
-export async function register(payload:UnValidated<RegisterRequest>,h:ResponseToolkit){
+import { responser } from '../api_utils/responser';
+export async function register(payload:UnValidated<RegisterRequest>,h?:ResponseToolkit){
     let response:RegisterResponse = {
         status:'Invalid',
         userID:-1,
@@ -20,7 +21,7 @@ export async function register(payload:UnValidated<RegisterRequest>,h:ResponseTo
                 status:'Invalid',
                 userID:-1,
             };
-            return h.response(response).code(400);
+            return responser(response,h,400);
         }
 
         //检查用户是否存在
@@ -29,7 +30,7 @@ export async function register(payload:UnValidated<RegisterRequest>,h:ResponseTo
                 status:'User Already Registered',
                 userID:-1,
             };
-            return h.response(response).code(400);
+            return responser(response,h,400);
         }
         
         //检查邀请码是否存在
@@ -38,7 +39,7 @@ export async function register(payload:UnValidated<RegisterRequest>,h:ResponseTo
                 status:'Invalid',
                 userID:-1,
             };
-            return h.response(response).code(400);
+            return responser(response,h,400);
         }
         removeCode(payload.inviteCode,mysqlName.table.registerInviteCode);
 
@@ -50,14 +51,14 @@ export async function register(payload:UnValidated<RegisterRequest>,h:ResponseTo
             status:'Success',
             userID:res.insertId,
         }
-        return h.response(response).code(200);
+        return responser(response,h,200);
     }catch(e){
         console.log(e);
         response = {
             status:'Unexpected Error',
             userID:-1,
         };
-        return h.response(response).code(500);
+        return responser(response,h,500);
     }
 }  
 server.route({

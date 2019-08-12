@@ -1,10 +1,10 @@
-import {Lifecycle,ResponseToolkit,ResponseObject} from '@hapi/hapi'
+import {Lifecycle,ResponseToolkit,ResponseValue} from '@hapi/hapi'
 import { querySession } from './session_utils';
 import { AbstractResponse } from '../account-client/lib/declarations';
 export function genRouterHandler<ResponseT extends AbstractResponse>(
     nLogin:ResponseT,
     uexpErr:ResponseT,
-    responseHandler:(payload:any,user:number,h:ResponseToolkit)=>Promise<ResponseT|ResponseObject>
+    responseHandler:(payload:any,user:number,h:ResponseToolkit)=>Promise<ResponseT|ResponseValue>
 ):Lifecycle.Method{
     return async (request,h)=>{
         const session = request.state.session;

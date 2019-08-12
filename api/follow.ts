@@ -6,6 +6,7 @@ import { queryUserViaUserID } from "../api_utils/user_queries";
 import { qFollowListValidate, followValidate } from "../account-client/lib/follow";
 import { genRouterHandler } from "../api_utils/sess_hadler";
 import {ResponseToolkit,ResponseObject} from '@hapi/hapi'
+import { responser } from "../api_utils/responser";
 
 export const FOLLOW = false;
 export const UNFOLLOW = true;
@@ -13,7 +14,7 @@ export async function follow(
     payload:UnValidated<FollowRequest>,
     followedBy:number,
     op:boolean,
-    h:ResponseToolkit
+    h?:ResponseToolkit
 ){
     let response:FollowResponse = {
         status:'Unexpected Error',
@@ -22,14 +23,14 @@ export async function follow(
         response = {
             status:'Invalid',
         };
-        return h.response(response).code(400);
+        return responser(response,h,400);
     }
     try{
         if(!await queryUserViaUserID(payload.targetID)){
             response = {
                 status:'Target User Not Exist',
             }
-            return h.response(response).code(404);
+            return responser(response,h,404);
         }
         if(op == FOLLOW){
             await addFollow(followedBy,payload.targetID);
@@ -39,13 +40,13 @@ export async function follow(
         response = {
             status:'Success',
         }
-        return h.response(response).code(200);
+        return responser(response,h,200);
     }catch(e){
         console.log(e);
         response = {
             status:'Unexpected Error',
         }
-        return h.response(response).code(500);
+        return responser(response,h,500);
     }
 }
 export const FOLLOWING = false;//关注
@@ -55,7 +56,7 @@ export async function getFollowList(
     payload:UnValidated<GetFollowListRequest>,
     user:number,
     op:boolean,
-    h:ResponseToolkit
+    h?:ResponseToolkit
 ){
     let response:GetFollowListResponse = {
         status:'Unexpected Error',
@@ -67,7 +68,7 @@ export async function getFollowList(
                 status:'Invalid',
                 list:[],
             }
-            return h.response(response).code(400)
+            return responser(response,h,400)
         }
         if(op == FOLLOWING){
             response = {
@@ -80,17 +81,17 @@ export async function getFollowList(
                 list:await queryFollowed(user,payload.offset,payload.amount),
             }
         }
-        return h.response(response).code(200);
+        return responser(response,h,200);
     }catch(e){
         console.log(e);
         response = {
             status:'Unexpected Error',
             list:[],
         }
-        return h.response(response).code(500)
+        return responser(response,h,500)
     }
 }
-export async function getFollowAmount(user:number,op:boolean,h:ResponseToolkit){
+export async function getFollowAmount(user:number,op:boolean,h?:ResponseToolkit){
     let response:GetFollowAmountResponse = {
         status:'Unexpected Error',
         amount:-1,
@@ -107,14 +108,14 @@ export async function getFollowAmount(user:number,op:boolean,h:ResponseToolkit){
                 amount:await queryFollowedAmount(user),
             }
         }
-        return h.response(response).code(200);
+        return responser(response,h,200);
     }catch(e){
         console.log(e);
         response = {
             status:'Unexpected Error',
             amount:-1,
         }
-        return h.response(response).code(500);
+        return responser(response,h,500);
     }
 }
 

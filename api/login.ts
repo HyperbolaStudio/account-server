@@ -3,9 +3,10 @@ import {queryUserViaUsername, queryUserViaUserID} from '../api_utils/user_querie
 import { server } from '../lib/server_init';
 import { validate as loginValidate } from '../account-client/lib/login';
 import { genSessionID } from '../api_utils/session_utils';
-import {ResponseToolkit,ResponseObject} from '@hapi/hapi';
+import {ResponseToolkit,ResponseValue} from '@hapi/hapi';
+import { responser } from '../api_utils/responser';
 
-export async function login(payload:UnValidated<LoginRequest>,h:ResponseToolkit):Promise<[ResponseObject,string?]>{
+export async function login(payload:UnValidated<LoginRequest>,h?:ResponseToolkit):Promise<[ResponseValue,string?]>{
     let response:LoginResponse = {
         status:'Invalid',
         sessionID:'',
@@ -21,7 +22,7 @@ export async function login(payload:UnValidated<LoginRequest>,h:ResponseToolkit)
                 status:'Invalid',
                 sessionID:'',
             }
-            return [h.response(response).code(400)];
+            return [responser(response,h,400)];
         }
 
         //获取用户信息行
@@ -38,7 +39,7 @@ export async function login(payload:UnValidated<LoginRequest>,h:ResponseToolkit)
                     status:'Invalid',
                     sessionID:'',
                 };
-                return [h.response(response).code(400)];
+                return [responser(response,h,400)];
         }
         //检查用户是否存在
         if(!user){
@@ -46,7 +47,7 @@ export async function login(payload:UnValidated<LoginRequest>,h:ResponseToolkit)
                 status:'User Not Found',
                 sessionID:'',
             }
-            return [h.response(response).code(400)];
+            return [responser(response,h,400)];
         }
 
         //登录成功
@@ -56,13 +57,13 @@ export async function login(payload:UnValidated<LoginRequest>,h:ResponseToolkit)
                 sessionID:await genSessionID(user.userid),
             }
             // console.log(`notice[user login]: ${user.username} logged in.`)
-            return [h.response(response).code(200),response.sessionID];
+            return [responser(response,h,200),response.sessionID];
         }else{
             response = {
                 status:'Failed',
                 sessionID:'',
             }
-            return [h.response(response).code(403)];
+            return [responser(response,h,403)];
         }
     }catch(e){
         console.log(e);
@@ -71,7 +72,7 @@ export async function login(payload:UnValidated<LoginRequest>,h:ResponseToolkit)
             sessionID:'',
         }
     }
-    return [h.response(response).code(500)];
+    return [responser(response,h,500)];
 }
 server.state('session',{
     ttl:365*24*60*60*1000,
