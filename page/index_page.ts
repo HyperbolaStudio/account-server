@@ -26,7 +26,7 @@ server.route({
         }
         let res = '';
         try{
-            res = await ejs.renderFile('./account-client/view/index.ejs',{
+            res = await ejs.renderFile('./account-client/view/page/index.ejs',{
                 titleBar:{
                     logoSrc:'/assets/logo0.svg',
                     title:'破站',
