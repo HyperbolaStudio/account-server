@@ -3,8 +3,9 @@ import { UnValidated, QueryUserRequest, QueryUserResponse, QUERY_USER_REQUEST_QU
 import { validate } from "../account-client/lib/query_user";
 import { queryUserViaUsername, queryUserViaUserID } from "../api_utils/user_queries";
 import { genderNum2genderStr } from "../api_utils/register_utils";
+import {ResponseToolkit} from '@hapi/hapi';
 
-export async function queryUser(payload:UnValidated<QueryUserRequest>){
+export async function queryUser(payload:UnValidated<QueryUserRequest>,h:ResponseToolkit){
     let response:QueryUserResponse = {
         status:'Unexpected Error',
     }
@@ -13,7 +14,7 @@ export async function queryUser(payload:UnValidated<QueryUserRequest>){
             response = {
                 status:'Invalid',
             }
-            return response;
+            return h.response(response).code(400);
         }
         let res;
         switch(payload.queryCol){
@@ -28,7 +29,7 @@ export async function queryUser(payload:UnValidated<QueryUserRequest>){
             response = {
                 status:'User Not Found',
             }
-            return response;
+            return h.response(response).code(404);
         }
         // console.log(res);
         response = {
@@ -48,13 +49,13 @@ export async function queryUser(payload:UnValidated<QueryUserRequest>){
                 res.birthdate.getDate()
             ];
         }
-        return response;
+        return h.response(response).code(200);
     }catch(e){
         console.log(e);
         response = {
             status:'Unexpected Error',
         }
-        return response;
+        return h.response(response).code(500);
     }
 }
 
@@ -62,7 +63,7 @@ server.route({
     method:'POST',
     path:'/api/user/query',
     handler:async (request,h)=>{
-        return await queryUser(request.payload as UnValidated<QueryUserRequest>)
+        return await queryUser(request.payload as UnValidated<QueryUserRequest>,h)
     },
 });
 console.log(`notice[server]: Query User Service Started.`);

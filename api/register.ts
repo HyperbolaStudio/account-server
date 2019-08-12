@@ -7,7 +7,8 @@ import mysqlName from '../config/mysql_table_name.json';
 import {validate as valValidate} from '../account-client/lib/register';
 import {asyncMysqlQuery as mysqlQuery} from '../lib/mysql_server_init';
 import { validate, removeCode } from '../api_utils/invitecode_utils';
-export async function register(payload:UnValidated<RegisterRequest>):Promise<RegisterResponse>{
+import {ResponseToolkit} from '@hapi/hapi'
+export async function register(payload:UnValidated<RegisterRequest>,h:ResponseToolkit){
     let response:RegisterResponse = {
         status:'Invalid',
         userID:-1,
@@ -19,7 +20,7 @@ export async function register(payload:UnValidated<RegisterRequest>):Promise<Reg
                 status:'Invalid',
                 userID:-1,
             };
-            return response;
+            return h.response(response).code(400);
         }
 
         //检查用户是否存在
@@ -28,7 +29,7 @@ export async function register(payload:UnValidated<RegisterRequest>):Promise<Reg
                 status:'User Already Registered',
                 userID:-1,
             };
-            return response;
+            return h.response(response).code(400);
         }
         
         //检查邀请码是否存在
@@ -37,7 +38,7 @@ export async function register(payload:UnValidated<RegisterRequest>):Promise<Reg
                 status:'Invalid',
                 userID:-1,
             };
-            return response;
+            return h.response(response).code(400);
         }
         removeCode(payload.inviteCode,mysqlName.table.registerInviteCode);
 
@@ -49,15 +50,14 @@ export async function register(payload:UnValidated<RegisterRequest>):Promise<Reg
             status:'Success',
             userID:res.insertId,
         }
-        
-        return response;
+        return h.response(response).code(200);
     }catch(e){
         console.log(e);
         response = {
             status:'Unexpected Error',
             userID:-1,
         };
-        return response;
+        return h.response(response).code(500);
     }
 }  
 server.route({
@@ -65,18 +65,18 @@ server.route({
     path:'/api/register',
     handler:async (request,h) => {
         const {payload} = (request as {payload:UnValidated<RegisterRequest>});
-        return (await register(payload));
+        return (await register(payload,h));
     }
 });
 
 // TODO: This is a test page
-server.route({
-    method:'GET',
-    path:'/register',
-    handler:(request,h)=>{
-        return h.file('./account-client/test/testpage.html');
-    }
-})
+// server.route({
+//     method:'GET',
+//     path:'/register',
+//     handler:(request,h)=>{
+//         return h.file('./account-client/test/testpage.html');
+//     }
+// })
 console.log('notice[server]: Register Service Started.')
 // process.on('SIGINT',()=>{
 //     stop();
