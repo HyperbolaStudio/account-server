@@ -76,7 +76,7 @@ export async function login(payload:UnValidated<LoginRequest>,h?:ResponseToolkit
 }
 server.state('session',{
     ttl:365*24*60*60*1000,
-    isHttpOnly:false,
+    isHttpOnly:true,
     isSecure:false,
     // domain:'localhost',
     path:'/',
