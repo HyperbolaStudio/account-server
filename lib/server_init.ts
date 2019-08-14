@@ -7,6 +7,7 @@ const server = new Server({
     host:'localhost',
 });
 async function init (){
+    console.log((new Date()).toLocaleString());
     mysqlInit();
     await server.start();
     await server.register(inert);

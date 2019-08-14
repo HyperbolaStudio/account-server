@@ -1,31 +1,22 @@
 import ejs from 'ejs'
 import { server } from '../lib/server_init';
-import { querySession } from '../api_utils/session_utils';
 import { queryUserViaUserID } from '../api_utils/user_queries';
+import { sess } from '../page_utils/sess';
 server.route({
     method:'GET',
     path:'/',
-    handler:async (request,h)=>{
-        let isLoggedIn = true;
-        const session = request.state.session;
-        let userid:number|null = 0;
-        let username = '';
-        try{
-            if(!session || !session.sessionID || !(userid = await querySession(session.sessionID))){
-                isLoggedIn = false;
-            }else{
-                let u = await queryUserViaUserID(userid)
-                if(u){
-                    username = u.username;
-                }else{
-                    throw new Error();
-                }
-            }
-        }catch(e){
-            isLoggedIn = false;
-        }
+    handler:sess(async (request,h,userid)=>{
         let res = '';
         try{
+            let isLoggedIn = false;
+            let username = ''
+            if(~userid){
+                let user = await queryUserViaUserID(userid);
+                if(user){
+                    username = user.username;
+                    isLoggedIn = true;
+                }
+            }
             res = await ejs.renderFile('./account-client/view/page/index.ejs',{
                 titleBar:{
                     logoSrc:'/assets/logo0.svg',
@@ -60,6 +51,6 @@ server.route({
         }
         // console.log(res);
         return res;
-    }
-})
-console.log('notice[server]: Index Page Service Started.')
+    })
+});
+console.log('notice[server]: Index Page Service Started.');

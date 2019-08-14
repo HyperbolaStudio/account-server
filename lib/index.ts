@@ -1,4 +1,4 @@
 import '../api';
 import '../page';
 import './console';
-// import '../test'
+import '../test/upload'

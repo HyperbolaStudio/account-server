@@ -90,7 +90,6 @@ server.route({
         if(response[1]){
             h.state('session',{
                 sessionID:response[1],
-                last:Date.now(),
             });
         }
         return response[0];
