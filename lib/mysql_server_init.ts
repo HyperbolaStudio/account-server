@@ -34,3 +34,9 @@ export function asyncMysqlQuery(statement:string):Promise<any>{
         })
     })
 }
+export function dateObj2timeStr(d:Date){
+    return `'${d.getFullYear()}-${d.getMonth()}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}'`;
+}
+export function dateArr2dateStr(d:[number,number,number]){
+    return `'${d[0]}-${d[1]}-${d[2]}'`;
+}
