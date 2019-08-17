@@ -1,13 +1,25 @@
 import {ServerRoute,Request,ResponseToolkit,Lifecycle} from '@hapi/hapi';
 import { Readable } from "stream";
 
-type UploadHandler = (request:Request,h:ResponseToolkit,uploadStream:Readable)=>Lifecycle.ReturnValue;
+export type StreamMap = {[property:string]:FileReadable|string|undefined};
+export type UploadHandler = (request:Request,h:ResponseToolkit,streams:StreamMap)=>Lifecycle.ReturnValue;
+
+//extra implementation
+export interface FileReadable extends Readable{
+    hapi:{
+        filename:string;
+        headers:{
+            'content-disposition':string;
+            'content-type':string;
+        }
+    }
+}
 
 export function uploadConfig(
     path:string,
     method:string,
     maxBytes:number,
-    uploadName:string,
+    uploadName:string[],
     uploadHandler:UploadHandler
 ):ServerRoute{
     return {
@@ -20,14 +32,16 @@ export function uploadConfig(
             }
         },
         handler:(request,h)=>{
-            let s = (request.payload as {[property:string]:Readable|undefined})[uploadName];
-            if(!s){
-                throw new Error(`Key "${uploadName}" doesn't exist in request payload.`);
+            let strms:StreamMap = {};
+            for(let x of uploadName){
+                let s = (request.payload as {[property:string]:FileReadable|undefined})[x];
+                strms[x] = s;
             }
+            
             return uploadHandler(
                 request,
                 h,
-                s
+                strms
             )
         }
     }
