@@ -1,6 +1,6 @@
 import {RegisterRequest,RegisterResponse, UnValidated} from '../account-client/lib/declarations';
 // import {user} from '../account-client/lib/regexp';
-import {insertNewUser,genderStr2genderNum} from '../api_utils/register_utils';
+import {insertNewUserStatement,genderStr2genderNum} from '../api_utils/register_utils';
 import {queryUserViaUsername} from '../api_utils/user_queries'
 import { server } from '../lib/server_init';
 import mysqlName from '../config/mysql_table_name.json';
@@ -46,7 +46,7 @@ export async function register(payload:UnValidated<RegisterRequest>,h?:ResponseT
         //数据转换，插入用户
         payload.nickname = payload.nickname?payload.nickname:payload.username;
         let genderNum = genderStr2genderNum(payload.gender);
-        let res = await mysqlQuery(insertNewUser(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate));
+        let res = await mysqlQuery(insertNewUserStatement(payload.username,payload.passwordSHA256,payload.nickname,genderNum,payload.birthDate));
         response = {
             status:'Success',
             userID:res.insertId,
