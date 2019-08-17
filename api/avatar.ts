@@ -37,8 +37,6 @@ async function updateAvatar(userID:number,fileStream:FileReadable,h:ResponseTool
                         }
                         let size = sizeList[i];
                         let filePath = path.join(avatarPath,`${i}.png`);
-                        console.log(filePath);
-                        console.log(size);
                         gm(size0).resize(size,size).write(filePath,(err)=>{
                             if(err){
                                 reject(err);
