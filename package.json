@@ -5,7 +5,7 @@
   "main": "lib/index.ts",
   "scripts": {
     "deploy": "node lib/index.js",
-    "tsc-watch":"tsc -p tsconfig.json --watch"
+    "tsc-watch": "tsc -p tsconfig.json --watch"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "@hapi/hapi": "^18.3.1",
     "@hapi/inert": "^5.2.1",
     "@types/ejs": "^2.6.3",
+    "@types/gm": "^1.18.3",
     "@types/hapi__boom": "^7.4.0",
     "@types/hapi__hapi": "^18.2.5",
     "@types/hapi__inert": "^5.2.0",
@@ -29,6 +30,7 @@
     "commander": "^2.20.0",
     "css-loader": "^3.2.0",
     "ejs": "^2.6.2",
+    "gm": "^1.23.1",
     "hash.js": "^1.1.7",
     "mysql": "^2.17.1",
     "style-loader": "^1.0.0",
