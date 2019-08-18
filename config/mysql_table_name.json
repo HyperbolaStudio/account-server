@@ -4,6 +4,8 @@
         "users":"users",
         "sessions":"sessionMap",
         "registerInviteCode":"inviteCode",
-        "followMap":"followMap"
+        "followMap":"followMap",
+        "personalize":"personalize",
+        "integral":"integral"
     }
 }

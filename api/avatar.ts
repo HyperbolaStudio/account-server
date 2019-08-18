@@ -1,6 +1,4 @@
 import { server } from "../lib/server_init";
-import url from 'url';
-import querystring from 'querystring';
 import { uploadConfig } from "../api_utils/upload_handler";
 import { UpdateAvatarResponse } from "../account-client/lib/declarations";
 import { genFileRouterHandler } from "../api_utils/sess_hadler";
@@ -64,13 +62,15 @@ server.route({
     method:'GET',
     path:'/api/avatar/{userID}',
     handler:(request,h)=>{
-        let query = url.parse(request.path).query
-        let queryObj = query?querystring.parse(query):null;
+        let queryObj = request.query;
         let type = 0;
+        let filePath = '';
         if(queryObj){
-            if(queryObj.type){
-                let t = Number(queryObj.type)
-                type = isNaN(t)?0:t;
+            let t = Number(queryObj.type)
+            type = isNaN(t)?0:t;
+            filePath = `./data/avatar/${request.params.userID}/${type}.png`;
+            if(!fs.existsSync(filePath)){
+                type = 0;
             }
         }
         return h.file(`./data/avatar/${request.params.userID}/${type}.png`);
